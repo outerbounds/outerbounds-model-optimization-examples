@@ -4,7 +4,7 @@ This repository will help you optimize models for inference in Outerbounds workf
 
 # Examples index
 
-> If you'd like to add an example, submit a PR! If you'd like to request an example, please [contact the Outerbounds team in Slack](https://outerboundsco.slack.com/archives/C02116BBNTU).
+> If you'd like to add an example, submit a PR! If you'd like to request an example, please [contact the Outerbounds team in Slack](slack.outerbounds.co).
 
 ## ONNX
 
