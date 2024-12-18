@@ -129,16 +129,18 @@ def optimize(
 
 def download_model(
     flow_name=DEFAULT_FLOW_NAME,
-    model_dst_path=DEFAULT_MODEL_PATH
+    model_dst_path=DEFAULT_MODEL_PATH,
+    run=None
 ):
-    f=Flow(flow_name)
-    # Use Client API + Metaflow tags + run properties to filter desired run
-    r=f.latest_successful_run
+    if run is None:
+        f=Flow(flow_name)
+        # Use Client API + Metaflow tags + run properties to filter desired run
+        run=f.latest_successful_run
     # s3_path = r.data.fp32_bert_model['url']
     # with S3() as s3:
     #     obj = s3.get(s3_path)
     #     os.rename(obj.path, model_dst_path)
-    with S3(run=r) as s3:
+    with S3(run=run) as s3:
         obj = s3.get('fp32.onnx')
         os.rename(obj.path, model_dst_path)
     print(f'Model downloaded to {model_dst_path}.')
