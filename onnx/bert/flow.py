@@ -36,18 +36,21 @@ class OnnxDependenciesTest(FlowSpec):
     max_query_length = 64
     num_inference_samples = 100
 
-    @model
-    @card(type='blank', id='inference_progress')
-    @kubernetes(memory=24000)
-    @step
-    def start(self):
+    def _init_data_dir(self):
         import os
-        from mymodule import load_assets, optimize, test_inference
 
         os.makedirs('data', exist_ok=True)
         with open('data/dev-v1.1.json', 'w') as f:
             f.write(self.predict_file)
 
+    @model
+    @card(type='blank', id='inference_progress')
+    @kubernetes(memory=24000)
+    @step
+    def start(self):
+        from mymodule import load_assets, optimize
+
+        self._init_data_dir()
         dataset, model = load_assets(
             local_cache_dir=self.local_cache_dir,
             model_name_or_path=self.model_name_or_path,
@@ -57,7 +60,6 @@ class OnnxDependenciesTest(FlowSpec):
             max_query_length=self.max_query_length,
             predict_file='data/dev-v1.1.json'
         )
-
         optimized_fp32_model_path = optimize(
             model,
             dataset,
@@ -65,31 +67,17 @@ class OnnxDependenciesTest(FlowSpec):
             self.opset_version,
             self.enable_overwrite
         )
-
-        # self.fp32_bert_model = current.model.save(
-        #     optimized_fp32_model_path,
-        #     label="bert_fp32",
-        #     metadata={
-        #         "file_name": optimized_fp32_model_path,
-        #         "precision": "fp32",
-        #         "optimizer": "onnx"
-        #     }
-        # )
         with S3(run=self) as s3:
             s3.put_files([('fp32.onnx', optimized_fp32_model_path)])
-
-
-        self.avg_inference_time_ms = test_inference(
-            optimized_fp32_model_path, 
-            dataset, 
-            self.max_seq_length,
-            num_samples=self.num_inference_samples
-        )
         self.next(self.end)
 
+    @kubernetes(memory=24000)
     @step
     def end(self):
-        pass
+        from mymodule import test_e2e
+
+        self._init_data_dir()
+        self.avg_inference_time_ms = test_e2e(run=self)
 
 if __name__ == "__main__":
     OnnxDependenciesTest()

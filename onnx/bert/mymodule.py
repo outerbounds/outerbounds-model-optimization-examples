@@ -136,10 +136,6 @@ def download_model(
         f=Flow(flow_name)
         # Use Client API + Metaflow tags + run properties to filter desired run
         run=f.latest_successful_run
-    # s3_path = r.data.fp32_bert_model['url']
-    # with S3() as s3:
-    #     obj = s3.get(s3_path)
-    #     os.rename(obj.path, model_dst_path)
     with S3(run=run) as s3:
         obj = s3.get('fp32.onnx')
         os.rename(obj.path, model_dst_path)
@@ -205,7 +201,8 @@ def test_e2e(
     doc_stride = 128,
     max_query_length = 64,
     total_samples = 100,
-    opset_version = 11
+    opset_version = 11,
+    run=None
 ):
     dataset, _ = load_assets(
         local_cache_dir=local_cache_dir,
@@ -216,7 +213,7 @@ def test_e2e(
         max_query_length=max_query_length,
         predict_file=predict_file
     )
-    model_path = download_model()
+    model_path = download_model(run=run)
     avg_time = test_inference(
         model_path,
         dataset,
