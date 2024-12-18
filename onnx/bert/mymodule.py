@@ -2,6 +2,7 @@ import os
 import time
 import psutil
 import torch
+from tqdm import tqdm
 import onnxruntime as ort
 import onnx
 from onnxruntime.transformers import optimizer
@@ -16,7 +17,6 @@ DEFAULT_MODEL_PATH =  "bert-base-cased-squad_opt_cpu_fp32.onnx"
 
 
 def download_predict_file(local_cache_dir):
-    import os
     predict_file_url = "https://rajpurkar.github.io/SQuAD-explorer/dataset/dev-v1.1.json"
     predict_file = os.path.join(local_cache_dir, "dev-v1.1.json")
     if not os.path.exists(predict_file):
@@ -156,11 +156,6 @@ def test_inference(model_path, dataset, max_seq_length, num_samples=100):
     Returns:
         float: Average inference time in milliseconds
     """
-    import time
-    import psutil
-    import torch
-    import onnxruntime as ort
-    from tqdm import tqdm
 
     use_gpu = torch.cuda.is_available()
     device_name = 'gpu' if use_gpu else 'cpu'
@@ -220,5 +215,4 @@ def test_e2e(
         max_seq_length,
         num_samples=total_samples
     )
-    print(f"End-to-end test completed. Average inference time: {avg_time:.2f} ms")
     return avg_time

@@ -1,5 +1,4 @@
-from metaflow import FlowSpec, step, IncludeFile, pypi_base, kubernetes, model, current, card, S3
-from metaflow.cards import ProgressBar
+from metaflow import FlowSpec, step, IncludeFile, pypi_base, kubernetes, S3
 
 
 @pypi_base(
@@ -43,8 +42,6 @@ class OnnxDependenciesTest(FlowSpec):
         with open('data/dev-v1.1.json', 'w') as f:
             f.write(self.predict_file)
 
-    @model
-    @card(type='blank', id='inference_progress')
     @kubernetes(memory=24000)
     @step
     def start(self):
