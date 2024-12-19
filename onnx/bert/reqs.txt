@@ -1,0 +1,8 @@
+s3fs==2024.9.0
+numpy==1.26.4
+pyarrow==16.0.0
+transformers==4.31.0
+onnx==1.17.0
+optimum[onnxruntime-gpu]==1.23.3
+protobuf==3.20.3
+psutil==6.1.0
