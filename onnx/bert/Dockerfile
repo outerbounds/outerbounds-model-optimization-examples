@@ -8,5 +8,3 @@ COPY --from=builder /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc.so.12 /usr
 COPY --from=builder /usr/local/cuda/targets/x86_64-linux/lib/libnvrtc-builtins.so.12.4 /usr/local/cuda/lib64/
 
 ENV LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-COPY reqs.txt /tmp/reqs.txt
-RUN pip install -r /tmp/reqs.txt
